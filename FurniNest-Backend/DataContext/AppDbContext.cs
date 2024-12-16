@@ -1,7 +1,5 @@
 ﻿
-using FurniNest_Backend.Models.CategoryModel;
-using FurniNest_Backend.Models.ProductModel;
-using FurniNest_Backend.Models.UserModel;
+using FurniNest_Backend.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FurniNest_Backend.DataContext

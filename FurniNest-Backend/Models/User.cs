@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace FurniNest_Backend.Models.UserModel
+namespace FurniNest_Backend.Models
 {
     public class User
     {
 
         public int Id { get; set; }
 
-        [Required(ErrorMessage ="Name is Required")]
+        [Required(ErrorMessage = "Name is Required")]
         [MaxLength(50)]
         public string? Name { get; set; }
 
@@ -23,7 +23,7 @@ namespace FurniNest_Backend.Models.UserModel
         public string? Role { get; set; }
 
         [Required]
-        public bool AccountStatus { get; set; } 
+        public bool AccountStatus { get; set; } = true;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

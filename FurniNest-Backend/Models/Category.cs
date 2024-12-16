@@ -1,7 +1,4 @@
-﻿
-using FurniNest_Backend.Models.ProductModel;
-
-namespace FurniNest_Backend.Models.CategoryModel
+﻿namespace FurniNest_Backend.Models
 {
     public class Category
     {

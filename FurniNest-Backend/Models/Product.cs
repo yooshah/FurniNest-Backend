@@ -1,8 +1,7 @@
-﻿using FurniNest_Backend.Models.CategoryModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FurniNest_Backend.Models.ProductModel
+namespace FurniNest_Backend.Models
 {
     public class Product
     {
@@ -13,7 +12,7 @@ namespace FurniNest_Backend.Models.ProductModel
 
         [Required(ErrorMessage = "Price is required")]
         [Range(0, double.MaxValue, ErrorMessage = "Price must be greater than or equal to 0")]
-        public decimal Price {  get; set; }
+        public decimal Price { get; set; }
 
         [Required(ErrorMessage = "Product image is required")]
         public string? Image { get; set; }
@@ -24,7 +23,7 @@ namespace FurniNest_Backend.Models.ProductModel
         public int Rating { get; set; }
 
         [Required]
-       
+
         public int CategoryId { get; set; }
 
         [Required(ErrorMessage = "Brand is required")]
