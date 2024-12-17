@@ -42,7 +42,20 @@ namespace FurniNest_Backend.DataContext
             modelBuilder.Entity<Product>()
                  .Property(p => p.Price)
                  .HasColumnType("decimal(10,2)");
+
+            modelBuilder.Entity<Category>().HasData(
+
+                new Category { CategoryId=1,Name= "Sofas" },
+                new Category { CategoryId=2,Name= "Living" },
+                new Category { CategoryId=3,Name= "Bedroom" },
+                new Category { CategoryId=4,Name= "Dining" },
+                new Category { CategoryId=5,Name= "New Arrivals" },
+                new Category { CategoryId=6,Name= "Office" },
+                new Category { CategoryId=7,Name= "Kitchen" }
+                );
         }
+
+
 
 
     }

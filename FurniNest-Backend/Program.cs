@@ -1,7 +1,9 @@
 using FurniNest_Backend.DataContext;
 using FurniNest_Backend.Mapper;
 using FurniNest_Backend.Services.AuthServices;
+using FurniNest_Backend.Services.CloudinaryService;
 using FurniNest_Backend.Services.JwtServices;
+using FurniNest_Backend.Services.ProductService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -22,6 +24,8 @@ namespace FurniNest_Backend
             builder.Services.AddAutoMapper(typeof(MapperProfile));
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IProductService , ProductService>();
+            builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
             builder.Services.AddControllers();
             builder.Services.AddLogging();
