@@ -16,6 +16,10 @@ namespace FurniNest_Backend.DataContext
 
         public DbSet<Product> Products { get; set; }
 
+        public DbSet<Cart> Carts { get; set; }
+
+        public DbSet<CartItem> CartItems { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -53,6 +57,36 @@ namespace FurniNest_Backend.DataContext
                 new Category { CategoryId=6,Name= "Office" },
                 new Category { CategoryId=7,Name= "Kitchen" }
                 );
+
+            //modelBuilder.Entity<Cart>()
+            //    .HasOne(u => u.User)
+            //    .WithOne(p => p.Cart)
+            //    .HasForeignKey(u => u.UserId);
+
+            modelBuilder.Entity<User>()
+                .HasOne(r => r.Cart)
+                .WithOne(c => c.User)
+                .HasForeignKey<Cart>(k => k.UserId);
+                
+
+            modelBuilder.Entity<CartItem>()
+                .HasOne(r => r.Cart)
+                .WithMany(r => r.CartItems)
+                .HasForeignKey(r => r.CartId);
+
+            modelBuilder.Entity<CartItem>()
+                .HasOne(r=>r.Product)
+                .WithMany(r=>r.CartItems)
+                .HasForeignKey(r => r.ProductId);
+                
+
+
+
+
+                
+
+            
+                
         }
 
 

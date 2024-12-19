@@ -31,5 +31,7 @@ namespace FurniNest_Backend.Models
 
         public virtual Category? Category { get; set; }
 
+        public virtual ICollection<CartItem>? CartItems { get; set; }
+
     }
 }

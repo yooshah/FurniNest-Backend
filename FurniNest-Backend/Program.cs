@@ -1,6 +1,8 @@
 using FurniNest_Backend.DataContext;
 using FurniNest_Backend.Mapper;
+using FurniNest_Backend.Middleware;
 using FurniNest_Backend.Services.AuthServices;
+using FurniNest_Backend.Services.CartService;
 using FurniNest_Backend.Services.CloudinaryService;
 using FurniNest_Backend.Services.JwtServices;
 using FurniNest_Backend.Services.ProductService;
@@ -26,6 +28,7 @@ namespace FurniNest_Backend
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IProductService , ProductService>();
             builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+            builder.Services.AddScoped<ICartService, CartService>();
 
             builder.Services.AddControllers();
             builder.Services.AddLogging();
@@ -90,6 +93,8 @@ namespace FurniNest_Backend
             app.UseHttpsRedirection();
             app.UseAuthentication(); // Ensure authentication is before authorization
             app.UseAuthorization();
+            app.UseMiddleware<UserIdentificationMiddleware>();
+
 
             app.MapControllers();
 

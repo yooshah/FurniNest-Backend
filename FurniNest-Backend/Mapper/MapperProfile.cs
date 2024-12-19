@@ -12,6 +12,7 @@ namespace FurniNest_Backend.Mapper
         {
         CreateMap<User,UserRegisterDTO>().ReverseMap();
         CreateMap<Product,AddProductDTO>().ReverseMap();
+        CreateMap<Product,ProductDTO>().ReverseMap();
 
         }
     }

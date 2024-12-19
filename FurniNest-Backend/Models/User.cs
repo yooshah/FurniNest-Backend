@@ -27,6 +27,8 @@ namespace FurniNest_Backend.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        public virtual Cart? Cart { get; set; }
+
 
 
 
