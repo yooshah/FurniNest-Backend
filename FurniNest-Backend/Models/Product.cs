@@ -33,5 +33,7 @@ namespace FurniNest_Backend.Models
 
         public virtual ICollection<CartItem>? CartItems { get; set; }
 
+        public virtual ICollection<WishListItem>? WishListItems { get; set; }
+
     }
 }

@@ -29,6 +29,7 @@ namespace FurniNest_Backend.Models
 
         public virtual Cart? Cart { get; set; }
 
+        public  virtual WishList? WishList { get; set; }
 
 
 

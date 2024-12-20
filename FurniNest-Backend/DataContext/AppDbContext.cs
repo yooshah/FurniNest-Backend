@@ -20,6 +20,10 @@ namespace FurniNest_Backend.DataContext
 
         public DbSet<CartItem> CartItems { get; set; }
 
+        public DbSet<WishList> WishLists { get; set; }
+
+        public DbSet<WishListItem> WishListItems { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -78,6 +82,23 @@ namespace FurniNest_Backend.DataContext
                 .HasOne(r=>r.Product)
                 .WithMany(r=>r.CartItems)
                 .HasForeignKey(r => r.ProductId);
+
+
+            modelBuilder.Entity<User>()
+                .HasOne(r => r.WishList)
+                .WithOne(r => r.User)
+                .HasForeignKey<WishList>(k=>k.userId);
+
+            modelBuilder.Entity<WishListItem>()
+                 .HasOne(r=>r.WishList)
+                 .WithMany(r=>r.WishListItems)
+                 .HasForeignKey(k=>k.WishListId);
+
+            modelBuilder.Entity<Product>()
+                .HasMany(r => r.WishListItems)
+                .WithOne(r => r.Product)
+                .HasForeignKey(k=>k.ProductId);
+               
                 
 
 

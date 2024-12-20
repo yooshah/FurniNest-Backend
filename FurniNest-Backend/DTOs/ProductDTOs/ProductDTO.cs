@@ -14,6 +14,8 @@ namespace FurniNest_Backend.DTOs.ProductDTOs
        
         public int Rating { get; set; }
 
+        public string? Image {  get; set; } 
+
 
         public string Category { get; set; }
 

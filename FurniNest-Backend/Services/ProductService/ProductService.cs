@@ -185,6 +185,7 @@ namespace FurniNest_Backend.Services.ProductService
                     Name = x.Name,
                     Price = x.Price,
                     Brand = x.Brand,
+                    Image = x.Image,
                     Category = x.Category.Name,
                     Rating = x.Rating
                 }

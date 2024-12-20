@@ -6,6 +6,7 @@ using FurniNest_Backend.Services.CartService;
 using FurniNest_Backend.Services.CloudinaryService;
 using FurniNest_Backend.Services.JwtServices;
 using FurniNest_Backend.Services.ProductService;
+using FurniNest_Backend.Services.WishListService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -29,6 +30,7 @@ namespace FurniNest_Backend
             builder.Services.AddScoped<IProductService , ProductService>();
             builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
             builder.Services.AddScoped<ICartService, CartService>();
+            builder.Services.AddScoped<IWishListService, WishListService>();
 
             builder.Services.AddControllers();
             builder.Services.AddLogging();
