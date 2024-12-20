@@ -1,10 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>FurniNest_Backend</RootNamespace>
+    <UserSecretsId>f501445b-e630-4a68-884a-dfd3252ed1a4</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
