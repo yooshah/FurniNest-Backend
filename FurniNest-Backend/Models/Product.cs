@@ -35,5 +35,7 @@ namespace FurniNest_Backend.Models
 
         public virtual ICollection<WishListItem>? WishListItems { get; set; }
 
+        public virtual ICollection<OrderItem>? OrderItems { get; set; }
+
     }
 }

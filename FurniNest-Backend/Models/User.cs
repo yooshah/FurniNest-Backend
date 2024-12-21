@@ -31,6 +31,10 @@ namespace FurniNest_Backend.Models
 
         public  virtual WishList? WishList { get; set; }
 
+        public virtual ICollection<ShippingAddress> ShippingAddresses { get; set; }
+
+        public virtual ICollection<Order> Orders { get; set; }
+        
 
 
 
