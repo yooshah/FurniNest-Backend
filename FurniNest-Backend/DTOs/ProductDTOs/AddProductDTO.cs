@@ -26,6 +26,10 @@ namespace FurniNest_Backend.DTOs.ProductDTOs
         [Required(ErrorMessage = "Brand is required")]
         public string? Brand { get; set; }
 
+        [Required(ErrorMessage ="Image Is Required")]
+
+        public string Image { get; set; }
+
 
 
 

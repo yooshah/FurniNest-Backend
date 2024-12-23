@@ -1,8 +1,6 @@
-﻿using Azure.Core;
-using FurniNest_Backend.Models;
+﻿using FurniNest_Backend.Models;
 using FurniNest_Backend.Services.CartService;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,14 +12,14 @@ namespace FurniNest_Backend.Controllers
     {
 
         private readonly ICartService _cartService;
-        public CartController(ICartService cartService) 
+        public CartController(ICartService cartService)
         {
             _cartService = cartService;
         }
 
         [HttpPost("AddToCart")]
         [Authorize(Roles = "user")]
-        public async Task <IActionResult> AddToCart([FromForm] int productId)
+        public async Task<IActionResult> AddToCart([FromForm] int productId)
         {
             try
             {
@@ -34,12 +32,12 @@ namespace FurniNest_Backend.Controllers
                 {
                     return Ok(res);
                 }
-                if(res.StatusCode ==404)
+                if (res.StatusCode == 404)
                 {
                     return NotFound(res);
                 }
 
-                return BadRequest(new ApiResponse<string>(400, "Bad request",null,res.Message));
+                return BadRequest(new ApiResponse<string>(400, "Bad request", null, res.Message));
 
             }
             catch (Exception ex)
@@ -58,9 +56,9 @@ namespace FurniNest_Backend.Controllers
             {
                 return Unauthorized(new ApiResponse<string>(401, "Invalid User, Adding to Cart Failed"));
             }
-            
 
-                var res = await _cartService.ViewCartByUser(userId);
+
+            var res = await _cartService.ViewCartByUser(userId);
 
             try
             {
@@ -109,11 +107,11 @@ namespace FurniNest_Backend.Controllers
                 {
                     return Ok(res);
                 }
-                if(res.StatusCode == 401)
+                if (res.StatusCode == 401)
                 {
                     return Unauthorized(res);
                 }
-                if( res.StatusCode == 404)
+                if (res.StatusCode == 404)
                 {
                     return NotFound(res);
                 }
@@ -121,10 +119,10 @@ namespace FurniNest_Backend.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500,$"Internal Server error, {ex.Message}");
+                return StatusCode(500, $"Internal Server error, {ex.Message}");
             }
         }
 
-                
+       
     }
 }

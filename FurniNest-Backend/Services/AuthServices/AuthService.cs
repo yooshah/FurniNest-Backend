@@ -106,6 +106,8 @@ namespace FurniNest_Backend.Services.AuthServices
             }
         }
 
+       
+
         private bool ValidatePassword(string password, string hashPassword) {
 
             return BCrypt.Net.BCrypt.Verify(password, hashPassword);    

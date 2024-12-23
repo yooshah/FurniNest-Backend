@@ -27,7 +27,7 @@ namespace FurniNest_Backend.Services.ProductService
         }
 
 
-        public async Task<int> AddProduct(AddProductDTO newProduct,IFormFile image)
+        public async Task<int> AddProduct(AddProductDTO newProduct)
         {
 
             if (newProduct == null) {
@@ -49,9 +49,9 @@ namespace FurniNest_Backend.Services.ProductService
 
             try
             {
-                var imgUrl = await _cloudinaryService.UploadProductImage(image);
+                //var imgUrl = await _cloudinaryService.UploadProductImage(image);
                 var AddingProduct = _mapper.Map<Product>(newProduct);
-                AddingProduct.Image = imgUrl;
+                //AddingProduct.Image = imgUrl;
                 await _context.Products.AddAsync(AddingProduct);
                 await _context.SaveChangesAsync();
                 return AddingProduct.ProductId;
@@ -100,7 +100,8 @@ namespace FurniNest_Backend.Services.ProductService
 
         }
 
-        public async Task<bool> UpdateProduct(int id, AddProductDTO updtProduct ,IFormFile image=null)
+        
+        public async Task<bool> UpdateProduct(int id, AddProductDTO updtProduct )
         {
 
             try
@@ -116,13 +117,13 @@ namespace FurniNest_Backend.Services.ProductService
                     throw new KeyNotFoundException("Category with the provided ID not found, unable to modify product.");
                 }
 
-                
+
                 //if (existProduct == null)
                 //{
                 //    throw new KeyNotFoundException("Product with the provided ID not found, unable to modify product.");
                 //}
 
-                if(existProduct!=null)
+                if (existProduct != null)
                 {
 
                     existProduct.Name = updtProduct.Name;
@@ -131,19 +132,20 @@ namespace FurniNest_Backend.Services.ProductService
                     existProduct.CategoryId = updtProduct.CategoryId;
                     existProduct.Brand = updtProduct.Brand;
 
+                
 
-                    if (image != null && image.Length > 0)
-                    {
-                        try
-                        {
-                            var imgUrl = await _cloudinaryService.UploadProductImage(image);
-                            existProduct.Image = imgUrl;
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception("Error uploading image: " + ex.Message);
-                        }
-                    }
+                    //if (image != null && image.Length > 0)
+                    //{
+                    //    try
+                    //    {
+                    //        var imgUrl = await _cloudinaryService.UploadProductImage(image);
+                    //        existProduct.Image = imgUrl;
+                    //    }
+                    //    catch (Exception ex)
+                    //    {
+                    //        throw new Exception("Error uploading image: " + ex.Message);
+                    //    }
+                    //}
 
                     await _context.SaveChangesAsync();
                     return true;
@@ -196,6 +198,34 @@ namespace FurniNest_Backend.Services.ProductService
 
         }
 
+        public async  Task<List<ProductDTO>> SearchProduct(string searchText)
+        {
+
+            if (string.IsNullOrEmpty(searchText))
+            {
+                return new List<ProductDTO>();
+            }
+
+            var searchProducts = await _context.Products.Include(x => x.Category).Where(x => x.Name.ToLower().Contains(searchText.ToLower())).ToListAsync();
+
+            var resultProduct = searchProducts.Select(item => new ProductDTO
+            {
+                Name = item.Name,
+                Price = item.Price,
+                Rating= item.Rating,
+                Image = item.Image,
+                Category=item.Category.Name,
+                Brand=item.Brand
+
+
+            }).ToList();
+
+            return resultProduct;
+
+
+
+
+        }
 
 
 

@@ -6,11 +6,13 @@ namespace FurniNest_Backend.Services.ProductService
 {
     public interface IProductService
     {
-        Task<int> AddProduct(AddProductDTO newProduct, IFormFile file);
+        Task<int> AddProduct(AddProductDTO newProduct);
         Task <ProductDTO> GetProductById(int id);
-        Task <bool>UpdateProduct(int id,AddProductDTO updateProduct, IFormFile image=null);
+        Task <bool>UpdateProduct(int id,AddProductDTO updateProduct);
 
         Task<List<ProductDTO>> GetAllProducts();
+
+        Task<List<ProductDTO>> SearchProduct(string searchText);
 
     }
 }
