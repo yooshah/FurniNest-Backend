@@ -5,6 +5,8 @@ namespace FurniNest_Backend.DTOs.ProductDTOs
 {
     public class ProductDTO
     {
+
+        public int ProductId { get; set; }
        
         public string? Name { get; set; }
 

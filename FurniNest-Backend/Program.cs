@@ -1,6 +1,7 @@
 using FurniNest_Backend.DataContext;
 using FurniNest_Backend.Mapper;
 using FurniNest_Backend.Middleware;
+using FurniNest_Backend.Services.AddressService;
 using FurniNest_Backend.Services.AdminService;
 using FurniNest_Backend.Services.AuthServices;
 using FurniNest_Backend.Services.CartService;
@@ -36,6 +37,7 @@ namespace FurniNest_Backend
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<IWishListService, WishListService>();
             builder.Services.AddScoped<IOrderService,OrderService>();
+            builder.Services.AddScoped<IAddressService, AddressService>();
             builder.Services.AddScoped<IUserService, UserService>();
 
             builder.Services.AddControllers();

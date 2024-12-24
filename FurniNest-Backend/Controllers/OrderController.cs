@@ -1,4 +1,5 @@
 ﻿using FurniNest_Backend.DTOs.OrderDTOs;
+using FurniNest_Backend.Models;
 using FurniNest_Backend.Services.OrderService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -81,37 +82,64 @@ namespace FurniNest_Backend.Controllers
             }
 
         }
+        [HttpGet("AdminViewUserOrder")]
+        [Authorize(Roles = "admin")]
 
-        [HttpPost("CreateOrderAddress")]
-        [Authorize(Roles ="user")]
-
-        public async Task<IActionResult> CreateAddress(OrderAddressDTO createAddress)
+        public async Task<IActionResult> GetuserOrderByAdmin(int userId)
         {
             try
             {
-                var userId = Convert.ToInt32(HttpContext.Items["UserId"]);
-
-                var res = await _orderService.CreateShippingAddress(userId, createAddress);
-
-                if (res.StatusCode == 400)
+                if (userId <= 0)
                 {
-                    return BadRequest("Bad Request,Address is nul or Already 3 Addresses of delivery Exist,Update it ");
+                    return BadRequest("Invalid User Id");
                 }
-                return Ok(res);
+                var res= await _orderService.GetUserOrderByAdmin(userId);
+                return Ok(new ApiResponse<List<AdminViewOrderDTO>>(200,"Successfully fetched user order",res));
 
             }
             catch (Exception ex)
             {
-
-                return StatusCode(500, ex.Message);
-
+                return StatusCode(500, $"Internal server error! {ex.Message}");
             }
-
-            
 
         }
 
+        [HttpGet("TotalRevenue")]
+        //[Authorize(Roles = "admin")]
+        public async Task<IActionResult> GetTotalRevenue()
+        {
+            try
+            {
+                var res = await _orderService.TotalRevenue();
 
-        
+                return Ok(new ApiResponse<decimal>(200, "Successfully Fetch Total Revenue ", res));
+
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"internal Sever error ${ex.Message}");
+            }
+
+        }
+        [HttpGet("TotalProductSold")]
+        //[Authorize(Roles = "admin")]
+        public async Task<IActionResult> GetTotalProductCount()
+        {
+            try
+            {
+                var res = await _orderService.TotalProductSold();
+
+                return Ok(new ApiResponse<decimal>(200, "Successfully Fetch Total Product sold ", res));
+
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"internal Sever error ${ex.Message}");
+            }
+
+
+        }
     }
 }

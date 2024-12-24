@@ -1,4 +1,7 @@
-﻿using FurniNest_Backend.Services.AdminService;
+﻿using CloudinaryDotNet.Actions;
+using FurniNest_Backend.DTOs.AdminDTO;
+using FurniNest_Backend.Models;
+using FurniNest_Backend.Services.AdminService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -59,5 +62,35 @@ namespace FurniNest_Backend.Controllers
                 return StatusCode(500, $"Internal Server,{ex.Message}");
             }
         }
+
+        [HttpGet("ViewUserById")]
+
+        //[Authorize(Roles = "admin")]
+
+        public async Task<IActionResult> GetUserById(int userId)
+        {
+            try
+            {
+                if (userId <= 0)
+                {
+                    return BadRequest(new ApiResponse<string>(400, "InvalidUserID"));
+                }
+
+                var res = await _userService.ViewUserById(userId);
+
+                if (res == null)
+                {
+                    return NotFound(new ApiResponse<string>(404, "User Not Found"));
+                }
+
+                return Ok(new ApiResponse<UserViewDTO>(200, $"Successfully fetched user with Id-{userId}",res));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server,{ex.Message}");
+            }
+        }
+
+
     }
 }

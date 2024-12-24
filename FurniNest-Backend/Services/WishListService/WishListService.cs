@@ -120,6 +120,7 @@ namespace FurniNest_Backend.Services.WishListService
             var wishListProducts = userWishList.WishList.WishListItems
                                             .Select(wi => new ProductDTO
                                             {
+                                                ProductId = wi.ProductId,
                                                 Name = wi.Product.Name,
                                                 Category = wi.Product.Category.Name,
                                                 Rating = wi.Product.Rating,

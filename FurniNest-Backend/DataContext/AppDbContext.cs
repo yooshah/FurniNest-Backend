@@ -89,7 +89,8 @@ namespace FurniNest_Backend.DataContext
             modelBuilder.Entity<CartItem>()
                 .HasOne(r=>r.Product)
                 .WithMany(r=>r.CartItems)
-                .HasForeignKey(r => r.ProductId);
+                .HasForeignKey(r => r.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
 
 
             modelBuilder.Entity<User>()
@@ -105,14 +106,15 @@ namespace FurniNest_Backend.DataContext
             modelBuilder.Entity<Product>()
                 .HasMany(r => r.WishListItems)
                 .WithOne(r => r.Product)
-                .HasForeignKey(k=>k.ProductId);
+                .HasForeignKey(k=>k.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
 
 
             modelBuilder.Entity<ShippingAddress>()
                 .HasOne(r=>r.User)
                 .WithMany(r=>r.ShippingAddresses)
                 .HasForeignKey(k=>k.UserId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Order>()
                 .HasOne(r => r.User)
@@ -123,7 +125,8 @@ namespace FurniNest_Backend.DataContext
             modelBuilder.Entity<Order>()
                 .HasOne(r=>r.ShippingAddress)
                 .WithMany()
-                .HasForeignKey(k=>k.ShippingAddressId);
+                .HasForeignKey(k=>k.ShippingAddressId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Order>()
                 .Property(p => p.OrderStatus)

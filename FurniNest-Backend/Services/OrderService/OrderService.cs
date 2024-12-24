@@ -135,7 +135,7 @@ namespace FurniNest_Backend.Services.OrderService
 
             if (userOrder == null || userOrder.OrderItems == null || !userOrder.OrderItems.Any())
             {
-                return new ApiResponse<OrderViewDTO>(200, "Order List is Empty"); // Return empty list if no orders found
+                return new ApiResponse<OrderViewDTO>(200, "Order List is Empty"); 
             }
 
             var resOrder=userOrder.OrderItems.Select(item=>new OrderItemDTO
@@ -166,79 +166,59 @@ namespace FurniNest_Backend.Services.OrderService
 
             return new  ApiResponse<OrderViewDTO>(200, "Successfully Fetched User Cart", res);
 
+         }
 
-        }
 
-        public async Task<ApiResponse<string>> CreateShippingAddress(int userUId, OrderAddressDTO orderAddressDTO)
+        public async Task<List<AdminViewOrderDTO>> GetUserOrderByAdmin(int userId)
         {
-            try
+            var userOrder=await _context.Users.Include(x=>x.Orders).ThenInclude(x=>x.OrderItems).FirstOrDefaultAsync(x=>x.Id==userId);
+
+            if (userOrder == null)
             {
-                if (orderAddressDTO == null)
-                {
-                    return new  ApiResponse<string>(400, "Bad Request,Address is null");
-
-
-                }
-
-                
-                // A user can have atmost 3 address
-
-                var addressCount = await _context.ShippingAddresses.CountAsync(x => x.UserId == userUId);
-
-                if(addressCount >= 3)
-                {
-                    return new  ApiResponse<string>(400, "User cannot have more than 3 addresses.");
-                }
-
-                
-
-                var newAddress=_mapper.Map<ShippingAddress>(orderAddressDTO);
-                newAddress.UserId= userUId;
-                await _context.ShippingAddresses.AddAsync(newAddress);
-                await _context.SaveChangesAsync();
-
-                
-                return  new  ApiResponse<string>(200, "Successfully Created Shipping Address");
+                return null;
             }
-            catch (Exception ex) { 
-                throw new Exception(ex.Message);
-            }
+
+            var result =userOrder.Orders.Select(item=>new AdminViewOrderDTO
+            {
+                OrderId=item.Id,
+                TransactionId=item.TransactionId,
+                TotalAmount=item.TotalAmount,
+                OrderStatus=item.OrderStatus.ToString(),
+
+
+
+            }).ToList();
+
+            return result;
 
         }
 
-        public async Task<ApiResponse<List<OrderAddressDTO>>> GetShippingAddress(int userId)
+       public async Task<decimal> TotalRevenue()
         {
+                
+            var revenue = await _context.OrdersItems.SumAsync(x => x.TotalPrice);
 
-            var userAddress = await _context.Users.Include(x => x.ShippingAddresses).FirstOrDefaultAsync(x => x.Id == userId);
+            return revenue;
             
-            if(userAddress == null)
-            {
-                return new ApiResponse<List<OrderAddressDTO>>(401, "Invalid User");
-            }
+            
 
-            var addressList = userAddress.ShippingAddresses.Count();
+        }
 
-            if (addressList <= 0)
-            {
-                return new ApiResponse<List<OrderAddressDTO>>(200, "Invalid User",new List<OrderAddressDTO>());
-            }
+        public async Task<int> TotalProductSold()
+        {
 
-            var res=new List<OrderAddressDTO>();
+            var TotalProduct = await _context.OrdersItems.SumAsync(x => x.Quantity);
 
-            foreach (var address in userAddress.ShippingAddresses)
-            {
-                var showAddress=_mapper.Map<OrderAddressDTO>(address);
-                res.Add(showAddress);
-            }
+            return TotalProduct;
 
-            return new ApiResponse<List<OrderAddressDTO>>(200, "Shipping Address Fetched Successfully", res);
 
 
         }
 
 
 
-      
+
+
 
 
     }

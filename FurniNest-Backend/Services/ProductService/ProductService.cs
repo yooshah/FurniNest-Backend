@@ -5,6 +5,7 @@ using FurniNest_Backend.DataContext;
 using FurniNest_Backend.DTOs.ProductDTOs;
 using FurniNest_Backend.Models;
 using FurniNest_Backend.Services.CloudinaryService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
@@ -118,34 +119,22 @@ namespace FurniNest_Backend.Services.ProductService
                 }
 
 
-                //if (existProduct == null)
-                //{
-                //    throw new KeyNotFoundException("Product with the provided ID not found, unable to modify product.");
-                //}
+                
 
                 if (existProduct != null)
                 {
+
 
                     existProduct.Name = updtProduct.Name;
                     existProduct.Price = updtProduct.Price;
                     existProduct.Rating = updtProduct.Rating;
                     existProduct.CategoryId = updtProduct.CategoryId;
                     existProduct.Brand = updtProduct.Brand;
+                    existProduct.Image = updtProduct.Image;
 
                 
 
-                    //if (image != null && image.Length > 0)
-                    //{
-                    //    try
-                    //    {
-                    //        var imgUrl = await _cloudinaryService.UploadProductImage(image);
-                    //        existProduct.Image = imgUrl;
-                    //    }
-                    //    catch (Exception ex)
-                    //    {
-                    //        throw new Exception("Error uploading image: " + ex.Message);
-                    //    }
-                    //}
+                  
 
                     await _context.SaveChangesAsync();
                     return true;
@@ -173,6 +162,26 @@ namespace FurniNest_Backend.Services.ProductService
 
         }
 
+       
+        public async Task<bool> DeleteProductById(int prdtId)
+        {
+            
+            var deleteProduct = await _context.Products.FirstOrDefaultAsync(x=>x.ProductId == prdtId);
+
+            if(deleteProduct == null)
+            {
+                return false;
+            }
+
+             _context.Products.Remove(deleteProduct);
+
+            await _context.SaveChangesAsync();
+            return true;
+
+
+           
+        }
+
         public async Task<List<ProductDTO>> GetAllProducts()
         {
 
@@ -184,6 +193,7 @@ namespace FurniNest_Backend.Services.ProductService
                 var allProduct = products.Select(x =>
                 new ProductDTO
                 {
+                    ProductId=x.ProductId,
                     Name = x.Name,
                     Price = x.Price,
                     Brand = x.Brand,
@@ -198,6 +208,58 @@ namespace FurniNest_Backend.Services.ProductService
 
         }
 
+        public async Task<List<ProductDTO>> GetProductByPagination(int pagenumber = 1, int pageSize = 5)
+        {
+
+            var products=await _context.Products.Include(x=>x.Category).Skip((pagenumber - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            
+            var productRes=products.Select(pdt=>new ProductDTO
+            {
+                ProductId=pdt.ProductId,
+                Name=pdt.Name,
+                Price=pdt.Price,
+                Category=pdt.Category.Name,
+                Brand=pdt.Brand,
+                Rating=pdt.Rating,
+                Image=pdt.Image
+            }).ToList();
+
+            return productRes;
+
+
+
+
+        }
+
+        public async Task<ApiResponse<List<ProductDTO>>> GetroductByCategory(int categoryId)
+        {
+            if (categoryId <= 0)
+            {
+                return new ApiResponse<List<ProductDTO>>(400, "Invalid Category Id");
+            }
+            var produttCategory=await _context.Categories.Include(x=>x.Products).FirstOrDefaultAsync(x=>x.CategoryId== categoryId);
+            if (produttCategory == null)
+            {
+                return new ApiResponse<List<ProductDTO>>(404, "Category not found");
+            }
+
+            var result = produttCategory.Products.Select(item => new ProductDTO
+            {
+                ProductId=item.ProductId,
+                Name = item.Name,
+                Price = item.Price,
+                Rating = item.Rating,
+                Image = item.Image,
+                Category = item.Category.Name,
+                Brand = item.Brand,
+            }).ToList();
+
+            return new ApiResponse<List<ProductDTO>>(200,"Successfully fetched products by category",result);
+
+            
+        }
+
         public async  Task<List<ProductDTO>> SearchProduct(string searchText)
         {
 
@@ -210,6 +272,7 @@ namespace FurniNest_Backend.Services.ProductService
 
             var resultProduct = searchProducts.Select(item => new ProductDTO
             {
+                ProductId=item.ProductId,
                 Name = item.Name,
                 Price = item.Price,
                 Rating= item.Rating,

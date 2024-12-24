@@ -9,12 +9,18 @@ namespace FurniNest_Backend.Services.OrderService
 
         Task<bool> VerifyRazorpayPayment(RazorpayPaymentDTO payment);
 
-        Task<ApiResponse<string>> CreateShippingAddress(int userUId, OrderAddressDTO orderAddressDTO);
 
-        Task<ApiResponse<List<OrderAddressDTO>>> GetShippingAddress(int userId);
 
-        Task <bool> CreateOrder(int userId,CreateOrderDTO createOrderDTO);
+        Task<bool> CreateOrder(int userId, CreateOrderDTO createOrderDTO);
 
         Task<ApiResponse<OrderViewDTO>> GetOrderItems(int userId);
+        Task<List<AdminViewOrderDTO>> GetUserOrderByAdmin(int userId);
+
+        Task<decimal> TotalRevenue();
+
+        Task<int> TotalProductSold();
+
+
+
     }
 }

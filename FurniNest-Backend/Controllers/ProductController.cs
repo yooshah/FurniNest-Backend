@@ -20,7 +20,7 @@ namespace FurniNest_Backend.Controllers
         }
 
         [HttpPost("AddProduct")]
-        [Authorize(Roles ="admin")]
+        //[Authorize(Roles ="admin")]
         public async Task<IActionResult> AddProduct([FromForm] AddProductDTO newProduct)
         {
             var productAdded=await _productService.AddProduct(newProduct);
@@ -52,6 +52,35 @@ namespace FurniNest_Backend.Controllers
             }
         }
 
+        [HttpDelete("admin/DeleteProduct")]
+        [Authorize(Roles = "admin")]
+
+        public async Task<IActionResult> DeleteProductById(int id)
+        {
+            try
+            {
+                if (id <= 0) 
+                {
+                    return BadRequest(new ApiResponse<string>(400, "Invalid Product Id"));
+                }
+
+                var res = await _productService.DeleteProductById(id);
+
+                if (!res)
+                {
+                    return NotFound(new ApiResponse<string>(404, "Product Not Found"));
+                }
+
+                return Ok(new ApiResponse<string>(200, $"Successfully deleted Product with Id-{id}"));
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<string>(500, $"Internal Server Error,${ex.Message}"));
+            }
+
+        }       
+
         [HttpGet("GetAllProducts")]
 
         public async Task<IActionResult> GetAllProducts()
@@ -60,6 +89,54 @@ namespace FurniNest_Backend.Controllers
             var allProduct =await  _productService.GetAllProducts();
 
             return Ok(new ApiResponse<List<ProductDTO>>(200,"Fetched All product",allProduct));
+        }
+
+
+
+        [HttpGet("ViewProductByCategory")]
+
+        public async Task<IActionResult> ViewProductByCategory(int categoryId)
+        {
+            try
+            {
+                var res = await _productService.GetroductByCategory(categoryId);
+
+                if (res.StatusCode == 400)
+                {
+                    return BadRequest(res);
+                }
+
+                if (res.StatusCode == 404)
+                {
+                    return NotFound(res);
+                }
+                if (res.StatusCode == 200)
+                {
+                    return Ok(res);
+                }
+
+                return BadRequest(res);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"an unexpected error occured {ex.Message}");
+            }
+
+        }
+
+        [HttpGet("ProductPagination")]
+        public async Task<IActionResult> GetProductByPagination()
+        {
+            try
+            {
+                var res = await _productService.GetProductByPagination();
+
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"an unexpected error occured {ex.Message}");
+            }
         }
 
         [HttpGet("SearchProducts")]

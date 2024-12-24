@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FurniNest_Backend.DTOs.AdminDTO;
 using FurniNest_Backend.DTOs.OrderDTOs;
 using FurniNest_Backend.DTOs.ProductDTOs;
 using FurniNest_Backend.DTOs.UserDTOs;
@@ -15,6 +16,7 @@ namespace FurniNest_Backend.Mapper
         CreateMap<Product,AddProductDTO>().ReverseMap();
         CreateMap<Product,ProductDTO>().ReverseMap();
         CreateMap<ShippingAddress,OrderAddressDTO>().ReverseMap();
+        CreateMap<User, UserViewDTO>();
 
         }
     }
