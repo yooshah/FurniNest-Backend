@@ -16,6 +16,8 @@ namespace FurniNest_Backend.Services.OrderService
         Task<ApiResponse<OrderViewDTO>> GetOrderItems(int userId);
         Task<List<AdminViewOrderDTO>> GetUserOrderByAdmin(int userId);
 
+        Task<bool> ChangeOrderStatus(int orderId,string orderStatus);
+
         Task<decimal> TotalRevenue();
 
         Task<int> TotalProductSold();

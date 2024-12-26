@@ -1,8 +1,12 @@
-﻿namespace FurniNest_Backend.Services.CloudinaryService
+﻿using FurniNest_Backend.DTOs.ProductDTOs;
+
+namespace FurniNest_Backend.Services.CloudinaryService
 {
     public interface ICloudinaryService
     {
 
-        Task<string> UploadProductImage(IFormFile file);
+        Task<ProductImgAndImgIdDTO> UploadProductImage(IFormFile file);
+
+        Task<bool> DeleteProductImage(string imageId);
     }
 }

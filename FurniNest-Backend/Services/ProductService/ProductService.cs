@@ -28,7 +28,7 @@ namespace FurniNest_Backend.Services.ProductService
         }
 
 
-        public async Task<int> AddProduct(AddProductDTO newProduct)
+        public async Task<int> AddProduct(AddProductDTO newProduct,IFormFile image)
         {
 
             if (newProduct == null) {
@@ -39,20 +39,25 @@ namespace FurniNest_Backend.Services.ProductService
 
             var categoryCheck = await _context.Categories.FirstOrDefaultAsync(x=>x.CategoryId==newProduct.CategoryId);
 
-            if (categoryCheck == null) {
+            if (categoryCheck == null ) {
                 throw new InvalidOperationException("Category with this Id doesn't exist");
 
 
 
+            }
+
+            if (image == null) {
+                throw new InvalidOperationException("Image is Not Uploaded");
             }
             var categoryExist = _context.Categories.FirstOrDefault(x => x.CategoryId == newProduct.CategoryId);
              if (categoryExist == null) throw new Exception("Category with this Id doesn't exist");
 
             try
             {
-                //var imgUrl = await _cloudinaryService.UploadProductImage(image);
+                var cloudRes = await _cloudinaryService.UploadProductImage(image);
                 var AddingProduct = _mapper.Map<Product>(newProduct);
-                //AddingProduct.Image = imgUrl;
+                AddingProduct.Image = cloudRes.ImgUrl;
+                AddingProduct.CloudImgId = cloudRes.ImgId;
                 await _context.Products.AddAsync(AddingProduct);
                 await _context.SaveChangesAsync();
                 return AddingProduct.ProductId;
@@ -102,7 +107,7 @@ namespace FurniNest_Backend.Services.ProductService
         }
 
         
-        public async Task<bool> UpdateProduct(int id, AddProductDTO updtProduct )
+        public async Task<bool> UpdateProduct(int id, AddProductDTO updtProduct,IFormFile image )
         {
 
             try
@@ -119,22 +124,41 @@ namespace FurniNest_Backend.Services.ProductService
                 }
 
 
+               
                 
 
                 if (existProduct != null)
                 {
 
-
+                    
+                   
+                    if(updtProduct.Name==null || updtProduct.Name.Length == 0)
+                    {
                     existProduct.Name = updtProduct.Name;
+
+                    }
+                    
                     existProduct.Price = updtProduct.Price;
                     existProduct.Rating = updtProduct.Rating;
                     existProduct.CategoryId = updtProduct.CategoryId;
                     existProduct.Brand = updtProduct.Brand;
-                    existProduct.Image = updtProduct.Image;
 
-                
+                    if (image != null)
+                    {
+                        var cloudRes = await _cloudinaryService.UploadProductImage(image);
 
-                  
+                        await _cloudinaryService.DeleteProductImage(existProduct.CloudImgId);
+                        
+                        existProduct.Image = cloudRes.ImgUrl;
+                        existProduct.CloudImgId= cloudRes.ImgId;
+
+                    }
+
+
+
+
+
+
 
                     await _context.SaveChangesAsync();
                     return true;
@@ -173,8 +197,10 @@ namespace FurniNest_Backend.Services.ProductService
                 return false;
             }
 
+
              _context.Products.Remove(deleteProduct);
 
+            await _cloudinaryService.DeleteProductImage(deleteProduct.CloudImgId);
             await _context.SaveChangesAsync();
             return true;
 
@@ -289,6 +315,8 @@ namespace FurniNest_Backend.Services.ProductService
 
 
         }
+
+
 
 
 

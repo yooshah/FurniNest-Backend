@@ -38,7 +38,7 @@ namespace FurniNest_Backend.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Carts");
+                    b.ToTable("Carts", (string)null);
                 });
 
             modelBuilder.Entity("FurniNest_Backend.Models.CartItem", b =>
@@ -64,7 +64,7 @@ namespace FurniNest_Backend.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CartItems");
+                    b.ToTable("CartItems", (string)null);
                 });
 
             modelBuilder.Entity("FurniNest_Backend.Models.Category", b =>
@@ -80,7 +80,7 @@ namespace FurniNest_Backend.Migrations
 
                     b.HasKey("CategoryId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
 
                     b.HasData(
                         new
@@ -154,7 +154,7 @@ namespace FurniNest_Backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("FurniNest_Backend.Models.OrderItem", b =>
@@ -186,7 +186,7 @@ namespace FurniNest_Backend.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrdersItems");
+                    b.ToTable("OrdersItems", (string)null);
                 });
 
             modelBuilder.Entity("FurniNest_Backend.Models.Product", b =>
@@ -222,7 +222,7 @@ namespace FurniNest_Backend.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("FurniNest_Backend.Models.ShippingAddress", b =>
@@ -282,7 +282,7 @@ namespace FurniNest_Backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ShippingAddresses");
+                    b.ToTable("ShippingAddresses", (string)null);
                 });
 
             modelBuilder.Entity("FurniNest_Backend.Models.User", b =>
@@ -322,7 +322,7 @@ namespace FurniNest_Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("FurniNest_Backend.Models.WishList", b =>
@@ -341,7 +341,7 @@ namespace FurniNest_Backend.Migrations
                     b.HasIndex("userId")
                         .IsUnique();
 
-                    b.ToTable("WishLists");
+                    b.ToTable("WishLists", (string)null);
                 });
 
             modelBuilder.Entity("FurniNest_Backend.Models.WishListItem", b =>
@@ -364,7 +364,7 @@ namespace FurniNest_Backend.Migrations
 
                     b.HasIndex("WishListId");
 
-                    b.ToTable("WishListItems");
+                    b.ToTable("WishListItems", (string)null);
                 });
 
             modelBuilder.Entity("FurniNest_Backend.Models.Cart", b =>

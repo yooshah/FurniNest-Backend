@@ -89,12 +89,6 @@ namespace FurniNest_Backend.Services.OrderService
 
 
 
-            // decimal totalAmount = userOrder.CartItems
-            //.Where(item => item.Product != null)
-            // .Sum(item => item.Product.Price * item.Quantity);
-
-
-
             var newOrder = new Models.Order
             {
                 UserId = userId,
@@ -190,6 +184,33 @@ namespace FurniNest_Backend.Services.OrderService
             }).ToList();
 
             return result;
+
+        }
+
+        public async Task<bool> ChangeOrderStatus(int orderId,string orderStatus)
+        {
+
+            var orderRes=await _context.Orders.FirstOrDefaultAsync(x=>x.Id == orderId);
+
+            if (orderRes == null || string.IsNullOrWhiteSpace(orderStatus))
+            {
+                return false;
+            }
+
+
+
+            if (Enum.TryParse<OrderStatus>( orderStatus, true, out var status))
+            {
+                orderRes.OrderStatus = status;
+
+                await _context.SaveChangesAsync();
+
+                return true;
+
+            }
+
+            return false;
+
 
         }
 

@@ -6,9 +6,9 @@ namespace FurniNest_Backend.Services.ProductService
 {
     public interface IProductService
     {
-        Task<int> AddProduct(AddProductDTO newProduct);
+        Task<int> AddProduct(AddProductDTO newProduct,IFormFile image);
         Task <ProductDTO> GetProductById(int id);
-        Task <bool>UpdateProduct(int id,AddProductDTO updateProduct);
+        Task <bool>UpdateProduct(int id,AddProductDTO updateProduct,IFormFile image);
 
         Task<bool> DeleteProductById(int id);
 
@@ -19,6 +19,8 @@ namespace FurniNest_Backend.Services.ProductService
         Task<ApiResponse<List<ProductDTO>>> GetroductByCategory(int categoryId);
 
         Task<List<ProductDTO>> SearchProduct(string searchText);
+
+        
 
 
     }

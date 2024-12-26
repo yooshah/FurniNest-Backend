@@ -21,9 +21,9 @@ namespace FurniNest_Backend.Controllers
 
         [HttpPost("AddProduct")]
         //[Authorize(Roles ="admin")]
-        public async Task<IActionResult> AddProduct([FromForm] AddProductDTO newProduct)
+        public async Task<IActionResult> AddProduct([FromForm] AddProductDTO? newProduct,IFormFile? image)
         {
-            var productAdded=await _productService.AddProduct(newProduct);
+            var productAdded=await _productService.AddProduct(newProduct,image);
 
             return Created($"api/products/{productAdded}",new ApiResponse<AddProductDTO>(201,"Product Added Successfully",newProduct));
         }
@@ -38,11 +38,11 @@ namespace FurniNest_Backend.Controllers
         }
 
         [HttpPut("UpdateProduct/{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, [FromForm] AddProductDTO updateProduct)
+        public async Task<IActionResult> UpdateProduct(int id, [FromForm] AddProductDTO? updateProduct,IFormFile? image)
         {
             try
             {
-                await _productService.UpdateProduct(id, updateProduct);
+                await _productService.UpdateProduct(id, updateProduct,image);
 
                 return Ok(new ApiResponse<string>(200, "Product Updated Successfully "));
             }

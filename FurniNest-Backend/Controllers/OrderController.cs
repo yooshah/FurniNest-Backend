@@ -104,6 +104,29 @@ namespace FurniNest_Backend.Controllers
 
         }
 
+        [HttpPatch]
+        //[Authorize(Roles = "admin")]
+
+        public async Task<IActionResult>ChangeOrderStatus(int orderId, string orderStatus)
+        {
+            try
+            {
+                var orderStatusRes = await _orderService.ChangeOrderStatus(orderId, orderStatus);
+
+                if (orderStatusRes)
+                {
+                    return Ok(new ApiResponse<string>(200, $"Succefully update OrderStatus ,OrderId-{orderId} ", orderStatus));
+                }
+                return Ok(new ApiResponse<string>(200, $"Failed to Update OrderStatus of OrderId-{orderId},",$"Opertaion-{orderStatus}"));
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error! {ex.Message}");
+            }
+
+        }
+
         [HttpGet("TotalRevenue")]
         //[Authorize(Roles = "admin")]
         public async Task<IActionResult> GetTotalRevenue()

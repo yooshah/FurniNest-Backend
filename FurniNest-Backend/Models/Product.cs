@@ -14,6 +14,10 @@ namespace FurniNest_Backend.Models
         [Range(0, double.MaxValue, ErrorMessage = "Price must be greater than or equal to 0")]
         public decimal Price { get; set; }
 
+        [Required(ErrorMessage ="Image Id is Required")]
+        public string CloudImgId { get; set; }
+
+
         [Required(ErrorMessage = "Product image is required")]
         public string? Image { get; set; }
 
@@ -36,6 +40,8 @@ namespace FurniNest_Backend.Models
         public virtual ICollection<WishListItem>? WishListItems { get; set; }
 
         public virtual ICollection<OrderItem>? OrderItems { get; set; }
+
+
 
     }
 }
