@@ -12,9 +12,9 @@ namespace FurniNest_Backend.Services.AuthServices
 
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
-        private readonly ILogger<IAuthService> _logger;
+        
         private readonly IJwtService _jwtService;
-        public AuthService(AppDbContext context,IMapper mapper,ILogger<IAuthService> logger,IJwtService jwtService) 
+        public AuthService(AppDbContext context,IMapper mapper,IJwtService jwtService) 
         {
             _context = context;
             _mapper = mapper;   
@@ -39,6 +39,8 @@ namespace FurniNest_Backend.Services.AuthServices
                 }
                 userRegister.Password = BCrypt.Net.BCrypt.HashPassword(userRegister.Password);
 
+                
+
                 var newUser = _mapper.Map<User>(userRegister);
                 _context.Add(newUser);
 
@@ -60,33 +62,33 @@ namespace FurniNest_Backend.Services.AuthServices
         {
             try
             {
-                //_logger.LogInformation("User attempting to log ....");
+               
                
 
                 var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == userLogin.Email);
 
                 if (user == null)
                 {
-                    //_logger.LogWarning("user not found");
+                
                     return new UserResonseDTO { Error = "Not Found" };
                 }
-                //_logger.LogInformation("User found. Validating password...");
+              
 
                 var passwordCheck = ValidatePassword(userLogin.Password, user.Password);
 
                 if (!passwordCheck)
                 {
 
-                    //_logger.LogWarning("invalid password");
+                
                     return new UserResonseDTO { Error= "Invalid Password" };
                 }
 
                 if (!user.AccountStatus)
                 {
-                    //_logger.LogWarning("user is blocked");
+                   
                     return new UserResonseDTO { Error = "User Blocked" };
                 }
-                //_logger.LogInformation("generating token");
+             
 
                 var token = _jwtService.TokenGenerator(user);
                 return new UserResonseDTO 
@@ -101,8 +103,8 @@ namespace FurniNest_Backend.Services.AuthServices
 
             }
             catch (Exception ex) {
-                _logger.LogError($"Error in login:{ex.Message}");
-                throw;
+              
+                throw new Exception(ex.Message);
             }
         }
 

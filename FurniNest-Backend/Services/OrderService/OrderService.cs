@@ -5,6 +5,7 @@ using FurniNest_Backend.Enums;
 using FurniNest_Backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Razorpay.Api;
+using System.Reflection.Metadata.Ecma335;
 
 namespace FurniNest_Backend.Services.OrderService
 {
@@ -87,6 +88,20 @@ namespace FurniNest_Backend.Services.OrderService
 
             }
 
+            foreach (var item in userOrder.CartItems)
+            {
+                
+                var currentStock=await _context.Products.FirstOrDefaultAsync(x=>x.ProductId == item.ProductId);
+
+                if (currentStock.Stock < item.Quantity) 
+                {
+                    return false;
+                }
+
+                currentStock.Stock -= item.Quantity;
+                
+            }
+
 
 
             var newOrder = new Models.Order
@@ -110,7 +125,12 @@ namespace FurniNest_Backend.Services.OrderService
 
             };
 
+            
+           
+
             await _context.Orders.AddAsync(newOrder);
+
+
 
             _context.Carts.Remove(userOrder);
 
@@ -120,47 +140,49 @@ namespace FurniNest_Backend.Services.OrderService
 
         }
 
-        public async Task<ApiResponse<OrderViewDTO>> GetOrderItems(int userId)
+        public async Task<ApiResponse<List<OrderViewDTO>>> GetOrderItems(int userId)
         {
 
-            var userOrder= await _context.Orders.Include(x=>x.OrderItems).ThenInclude(p=>p.Product).FirstOrDefaultAsync(x=>x.UserId==userId);
 
-            var orderaddress = await _context.ShippingAddresses.FirstOrDefaultAsync(x=>x.Id==userOrder.ShippingAddressId);
+            var userOrders = await _context.Orders
+      .Include(x => x.OrderItems)
+      .ThenInclude(x => x.Product)
+      .Where(x => x.UserId == userId)
+      .ToListAsync();
 
-            if (userOrder == null || userOrder.OrderItems == null || !userOrder.OrderItems.Any())
+            var deliveryAddresses = await _context.ShippingAddresses
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
+
+           
+            var addressDict = deliveryAddresses
+                .GroupBy(addr => addr.UserId)
+                .ToDictionary(group => group.Key, group => group.FirstOrDefault()); // Pick the first address per user
+
+           
+            var orderRes = userOrders.Select(order => new OrderViewDTO
             {
-                return new ApiResponse<OrderViewDTO>(200, "Order List is Empty"); 
-            }
-
-            var resOrder=userOrder.OrderItems.Select(item=>new OrderItemDTO
-            {
-                ProductName=item.Product.Name,
-                Quantity=item.Quantity,
-                Price=item.Product.Price,
-                TotalPrice=(item.Product.Price * item.Quantity)
-
+                TransactionId = order.TransactionId,
+                TotalAmount = order.OrderItems.Sum(x => x.Quantity * x.Price),
+                DeliveryAdrress = addressDict.TryGetValue(order.UserId, out var address)
+                    ? $"{address.Address}, {address.City}, {address.State} {address.Country}, {address.PostalCode}"
+                    : "Address not found",
+                Phone = addressDict.TryGetValue(order.UserId, out var phoneAddress) ? phoneAddress.Phone : "Phone not available",
+                OrderDate = order.OrderDate,
+                Items = order.OrderItems.Select(orderItem => new OrderItemDTO
+                {
+                    ProductName = orderItem.Product.Name,
+                    Price = orderItem.Price,
+                    Quantity = orderItem.Quantity,
+                    TotalPrice = orderItem.Price * orderItem.Quantity
+                }).ToList()
             }).ToList();
 
+            return new ApiResponse<List<OrderViewDTO>>(200, "Successfully Fetched User Orders", orderRes);
 
-            var totalPay=userOrder.OrderItems.Sum(x=>x.Quantity*x.Price);
+            
 
-            var res = new OrderViewDTO
-            {
-                TransactionId=userOrder.TransactionId,
-                TotalAmount=totalPay,
-                OrderStatus=Convert.ToString(userOrder.OrderStatus),
-                DeliveryAdrress=$"{orderaddress.Address},{orderaddress.City},{orderaddress.State} {orderaddress.Country},{orderaddress.PostalCode}",
-                Phone=orderaddress.Phone,
-                OrderDate=userOrder.OrderDate,
-                Items=resOrder,
-               
-
-            };
-
-
-            return new  ApiResponse<OrderViewDTO>(200, "Successfully Fetched User Cart", res);
-
-         }
+        }
 
 
         public async Task<List<AdminViewOrderDTO>> GetUserOrderByAdmin(int userId)

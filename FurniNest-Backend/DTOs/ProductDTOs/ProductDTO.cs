@@ -23,5 +23,7 @@ namespace FurniNest_Backend.DTOs.ProductDTOs
 
      
         public string? Brand { get; set; }
+        
+        public int Stock { get; set; }  
     }
 }

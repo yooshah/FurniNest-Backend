@@ -70,10 +70,7 @@ namespace FurniNest_Backend.DataContext
                 new Category { CategoryId=7,Name= "Kitchen" }
                 );
 
-            //modelBuilder.Entity<Cart>()
-            //    .HasOne(u => u.User)
-            //    .WithOne(p => p.Cart)
-            //    .HasForeignKey(u => u.UserId);
+           
 
             modelBuilder.Entity<User>()
                 .HasOne(r => r.Cart)

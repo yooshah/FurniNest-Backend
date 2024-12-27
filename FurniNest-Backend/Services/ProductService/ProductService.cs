@@ -132,7 +132,7 @@ namespace FurniNest_Backend.Services.ProductService
 
                     
                    
-                    if(updtProduct.Name==null || updtProduct.Name.Length == 0)
+                    if(string.IsNullOrEmpty(updtProduct.Name))
                     {
                     existProduct.Name = updtProduct.Name;
 
@@ -142,6 +142,7 @@ namespace FurniNest_Backend.Services.ProductService
                     existProduct.Rating = updtProduct.Rating;
                     existProduct.CategoryId = updtProduct.CategoryId;
                     existProduct.Brand = updtProduct.Brand;
+                    existProduct.Stock = updtProduct.Stock;
 
                     if (image != null)
                     {
@@ -225,7 +226,10 @@ namespace FurniNest_Backend.Services.ProductService
                     Brand = x.Brand,
                     Image = x.Image,
                     Category = x.Category.Name,
-                    Rating = x.Rating
+                    Rating = x.Rating,
+                    Stock = x.Stock,
+                   
+                   
                 }
                 ).ToList();
                 return allProduct;
@@ -248,7 +252,9 @@ namespace FurniNest_Backend.Services.ProductService
                 Category=pdt.Category.Name,
                 Brand=pdt.Brand,
                 Rating=pdt.Rating,
-                Image=pdt.Image
+                Image=pdt.Image,
+                Stock=pdt.Stock,
+                
             }).ToList();
 
             return productRes;
@@ -279,6 +285,7 @@ namespace FurniNest_Backend.Services.ProductService
                 Image = item.Image,
                 Category = item.Category.Name,
                 Brand = item.Brand,
+                Stock = item.Stock,
             }).ToList();
 
             return new ApiResponse<List<ProductDTO>>(200,"Successfully fetched products by category",result);
@@ -304,7 +311,8 @@ namespace FurniNest_Backend.Services.ProductService
                 Rating= item.Rating,
                 Image = item.Image,
                 Category=item.Category.Name,
-                Brand=item.Brand
+                Brand=item.Brand,
+                Stock=item.Stock,
 
 
             }).ToList();

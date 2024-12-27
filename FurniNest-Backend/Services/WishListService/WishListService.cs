@@ -126,7 +126,8 @@ namespace FurniNest_Backend.Services.WishListService
                                                 Rating = wi.Product.Rating,
                                                 Image = wi.Product.Image,
                                                 Brand = wi.Product.Brand,
-                                                Price = wi.Product.Price
+                                                Price = wi.Product.Price,
+                                                Stock = wi.Product.Stock,
 
                                             }).ToList();
 

@@ -33,6 +33,10 @@ namespace FurniNest_Backend.Models
         [Required(ErrorMessage = "Brand is required")]
         public string? Brand { get; set; }
 
+        [Required(ErrorMessage ="Stock is Required")]
+
+        public int Stock {  get; set; }
+
         public virtual Category? Category { get; set; }
 
         public virtual ICollection<CartItem>? CartItems { get; set; }

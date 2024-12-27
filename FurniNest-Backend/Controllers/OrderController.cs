@@ -104,7 +104,7 @@ namespace FurniNest_Backend.Controllers
 
         }
 
-        [HttpPatch]
+        [HttpPatch("ChangeOrderStatus")]
         //[Authorize(Roles = "admin")]
 
         public async Task<IActionResult>ChangeOrderStatus(int orderId, string orderStatus)
