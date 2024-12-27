@@ -2,7 +2,7 @@ using FurniNest_Backend.DataContext;
 using FurniNest_Backend.Mapper;
 using FurniNest_Backend.Middleware;
 using FurniNest_Backend.Services.AddressService;
-using FurniNest_Backend.Services.AdminService;sd
+using FurniNest_Backend.Services.AdminService;
 using FurniNest_Backend.Services.AuthServices;
 using FurniNest_Backend.Services.CartService;
 using FurniNest_Backend.Services.CloudinaryService;
