@@ -79,14 +79,16 @@ namespace FurniNest_Backend.Services.ProductService
         {
             try
             {
-                var existingProduct = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == id);
+                var existingProduct = await _context.Products.Include(x=>x.Category).FirstOrDefaultAsync(p => p.ProductId == id);
                 if (existingProduct == null)
                 {
-                    throw new InvalidOperationException("Wrong Product Id");
+                    return null;
 
                 }
 
                 var viewProduct = _mapper.Map<ProductDTO>(existingProduct);
+
+                viewProduct.Category = existingProduct.Category.Name;
 
                 return viewProduct;
 

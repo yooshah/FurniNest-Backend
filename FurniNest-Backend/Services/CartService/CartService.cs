@@ -12,22 +12,22 @@ namespace FurniNest_Backend.Services.CartService
         { 
             _context = context;
         }
-        public async Task<ApiResponse<string>> AddToCart(int userId, int productId)
+        public async Task<ApiResponse<CartItemViewDTO>> AddToCart(int userId, int productId)
         {
             var user = await _context.Users
                                      .Include(u => u.Cart)
-                                     .ThenInclude(c => c.CartItems) 
+                                     .ThenInclude(c => c.CartItems).ThenInclude(c=>c.Product)
                                      .FirstOrDefaultAsync(u => u.Id == userId);
 
             if (user == null)
             {
-                return new ApiResponse<string>(401, "Invalid User, Adding to Cart Failed");
+                return new ApiResponse<CartItemViewDTO>(401, "Invalid User, Adding to Cart Failed");
             }
-
+          
             var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == productId);
             if (product == null)
             {
-                return new ApiResponse<string>(404, "Invalid Product ID, Adding to Cart Failed");
+                return new ApiResponse<CartItemViewDTO>(404, "Invalid Product ID, Adding to Cart Failed");
             }
 
             if (user.Cart == null)
@@ -53,13 +53,14 @@ namespace FurniNest_Backend.Services.CartService
                 };
                 await _context.CartItems.AddAsync(cartItem);
                 await _context.SaveChangesAsync();
-                return new ApiResponse<string>(200, "Product Added to Cart successfully!");
+
+               
+                return new ApiResponse<CartItemViewDTO>(200, "Added to Cart successfully!");
             }
             else
             {
-                existingCartItem.Quantity++;
-                await _context.SaveChangesAsync();
-                return new ApiResponse<string>(200, "Product Quantity Increased in Cart");
+               
+                return new ApiResponse<CartItemViewDTO>(208, "Product Already in the cart!");
             }
         }
 
@@ -80,7 +81,6 @@ namespace FurniNest_Backend.Services.CartService
                     .Include(x => x.Cart)
                     .ThenInclude(x => x.CartItems)
                     .ThenInclude(p => p.Product)
-                    .ThenInclude(c => c.Category)
                     .FirstOrDefaultAsync(x => x.Id == userId);
 
                 if (userCart?.Cart?.CartItems == null || !userCart.Cart.CartItems.Any())
@@ -90,9 +90,9 @@ namespace FurniNest_Backend.Services.CartService
 
                 var allUserCartItem = userCart.Cart.CartItems.Select(item => new CartItemViewDTO
                 {
+                    CartItemId = item.Id,
                     Name = item.Product?.Name,
                     Brand = item.Product?.Brand,
-                    Category = item.Product?.Category?.Name,
                     Image = item.Product?.Image,
                     Rating = item.Product?.Rating ?? 0,
                     Price = item.Product?.Price ?? 0,
@@ -130,10 +130,13 @@ namespace FurniNest_Backend.Services.CartService
 
             var deleteItem = userCartItems.Cart.CartItems.FirstOrDefault(x => x.Id == CartItemId);
 
+
             if (deleteItem == null)
             {
                 return new ApiResponse<string>(404, "deleting Cart Item Failed,No such Item exist on Cart");
             }
+
+            
 
             userCartItems.Cart.CartItems.Remove(deleteItem);
 
@@ -142,6 +145,77 @@ namespace FurniNest_Backend.Services.CartService
             return new ApiResponse<string>(200, $"Deleted Cart Item Id-{CartItemId}");
 
 
+        }
+
+        public async  Task<ApiResponse<bool>> IncreaseCartItemQuantity(int userId, int CartItemId)
+        {
+
+
+            try
+            {
+                var userCartItem = await _context.Users.Include(x => x.Cart).ThenInclude(x => x.CartItems).FirstOrDefaultAsync(x => x.Id == userId);
+
+                if (userCartItem == null)
+                {
+                    return new ApiResponse<bool>(404, "Failed! No Such Product in Cart", false);
+                }
+
+                var cartProduct = userCartItem.Cart.CartItems.FirstOrDefault(x => x.Id == CartItemId);
+
+                if (cartProduct == null)
+                {
+                    return new ApiResponse<bool>(404, "Failed! No Such Product in Cart", false);
+                }
+                var productStock = await _context.Products.FirstOrDefaultAsync(x => x.ProductId == cartProduct.ProductId);
+
+                if (cartProduct.Quantity >= productStock.Stock)
+                {
+                    return new ApiResponse<bool>(409, $"Available Stock-{productStock.Stock}",false);
+                }
+
+                cartProduct.Quantity++;
+                await _context.SaveChangesAsync();
+                return new ApiResponse<bool>(200,"Quantity Increased",true);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<bool> DecresaeQuantity(int userId, int CartItemId)
+        {
+
+            try
+            {
+                var userCart = await _context.Users.Include(x => x.Cart).ThenInclude(x => x.CartItems).FirstOrDefaultAsync(x => x.Id == userId);
+
+                if (userCart?.Cart?.CartItems == null)
+                {
+                    return false;
+
+                }
+
+                var cartProduct = userCart.Cart.CartItems.FirstOrDefault(x => x.Id == CartItemId);
+                if (cartProduct == null)
+                {
+                    return false;
+                }
+                if (cartProduct.Quantity <= 1)
+                {
+                    return false;
+                }
+
+                cartProduct.Quantity--;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+
+            }
         }
 
     }

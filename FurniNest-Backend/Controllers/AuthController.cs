@@ -50,7 +50,7 @@ namespace FurniNest_Backend.Controllers
 
                 if (loginResult.Error == "Not Found")
                 {
-                    return NotFound(new ApiResponse<string>(404, "Not Found", null, "Please SignUp,User not found"));
+                    return NotFound(new ApiResponse<string>(404, "Not Found", null, "Please SignUp,Email not found"));
                 }
 
                 if (loginResult.Error == "Invalid Password")

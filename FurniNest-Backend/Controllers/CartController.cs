@@ -25,6 +25,8 @@ namespace FurniNest_Backend.Controllers
             {
                 var userId = Convert.ToInt32(HttpContext.Items["UserId"]);
 
+             
+
 
                 var res = await _cartService.AddToCart(userId, productId);
 
@@ -32,12 +34,16 @@ namespace FurniNest_Backend.Controllers
                 {
                     return Ok(res);
                 }
+                if (res.StatusCode == 208)
+                {
+                    return StatusCode(208, res);
+                }
                 if (res.StatusCode == 404)
                 {
                     return NotFound(res);
                 }
 
-                return BadRequest(new ApiResponse<string>(400, "Bad request", null, res.Message));
+                return BadRequest(new ApiResponse<string>(400, "Bad request!!", null, res.Message));
 
             }
             catch (Exception ex)
@@ -47,7 +53,7 @@ namespace FurniNest_Backend.Controllers
             }
         }
 
-        [HttpGet("ViewCart")]
+        [HttpGet("User/ViewCart")]
         [Authorize(Roles = "user")]
         public async Task<IActionResult> ViewCartByUser()
         {
@@ -67,6 +73,7 @@ namespace FurniNest_Backend.Controllers
                 {
                     return Ok(res);
                 }
+             
 
                 if (res.StatusCode == 401)
                 {
@@ -86,27 +93,31 @@ namespace FurniNest_Backend.Controllers
             }
         }
 
-        [HttpDelete("DeleteCartItems")]
+        [HttpDelete("DeleteCartItems/{deleteCartItemId}")]
         [Authorize(Roles = "user")]
 
         public async Task<IActionResult> DeleteCartItem(int deleteCartItemId)
         {
+            Console.WriteLine($"Trying to delete item with ID: {deleteCartItemId}");
+            var userCheck = int.TryParse(HttpContext.Items["UserId"].ToString(), out int userId);
+
+            if (!userCheck)
+            {
+                return Unauthorized(new ApiResponse<string>(401, "Invalid User,user Authentication Failed"));
+            }
 
             try
             {
 
-                var userCheck = int.TryParse(HttpContext.Items["UserId"].ToString(), out int userId);
-
-                if (!userCheck)
-                {
-                    return Unauthorized(new ApiResponse<string>(401, "Invalid User,user Authentication Failed"));
-                }
+               
                 var res = await _cartService.DeleteCartByUser(userId, deleteCartItemId);
 
                 if (res.StatusCode == 200)
                 {
                     return Ok(res);
                 }
+
+               
                 if (res.StatusCode == 401)
                 {
                     return Unauthorized(res);
@@ -120,6 +131,69 @@ namespace FurniNest_Backend.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal Server error, {ex.Message}");
+            }
+        }
+
+        [HttpPatch("CartQuantity/{cartItemId}/increment")]
+        [Authorize(Roles = "user")]
+        public async Task<IActionResult> IncreaseCartQuantity(int cartItemId)
+        {
+
+            var userId = Convert.ToInt32(HttpContext.Items["UserId"]);
+
+            try
+            {
+
+                var res=await _cartService.IncreaseCartItemQuantity(userId, cartItemId);
+
+                if (res.StatusCode == 404)
+                {
+                    return NotFound(res);
+                }
+
+                if(res.StatusCode == 409)
+                {
+                    return Conflict(res);
+                }
+                
+                if(res.StatusCode == 200)
+                {
+                    return Ok(res);
+                }
+                return BadRequest(res);
+
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server Error {ex.Message}");
+
+            }
+
+        }
+
+        [HttpPatch("CartQuantity/{cartItemId}/decrement")]
+        [Authorize(Roles ="user")]
+        public async Task<IActionResult> DecreaseQuantity(int cartItemId)
+        {
+            var userId = Convert.ToInt32(HttpContext.Items["UserId"]);
+            try
+            {
+                var res=await _cartService.DecresaeQuantity(userId, cartItemId);
+
+                if (!res)
+                {
+                    return NotFound(new ApiResponse<bool>(404,"Not Found!",res));
+                }
+
+                return Ok(res);
+
+
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(500, $"Internal server Error {ex.Message}");
             }
         }
 

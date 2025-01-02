@@ -20,7 +20,7 @@ namespace FurniNest_Backend.DTOs.UserDTOs
 
         [Required]
         [Compare("Password", ErrorMessage = "Password and Confirm Password do not match.")]
-        public string? PasswordConfirmation { get; set; }
+        public string? confirmPassword { get; set; }
 
     }
 }

@@ -72,6 +72,16 @@ namespace FurniNest_Backend
                     }
                 });
             });
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin",
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost:5173")
+                               .AllowAnyMethod()
+                               .AllowAnyHeader();
+                    });
+            });
 
             // Configure JWT authentication separately
             builder.Services.AddAuthentication(options =>
@@ -99,8 +109,8 @@ namespace FurniNest_Backend
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
-            app.UseHttpsRedirection();
+            app.UseCors("AllowSpecificOrigin");
+            //app.UseHttpsRedirection();
             app.UseAuthentication(); // Ensure authentication is before authorization
             app.UseAuthorization();
             app.UseMiddleware<UserIdentificationMiddleware>();

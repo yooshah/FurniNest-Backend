@@ -34,6 +34,10 @@ namespace FurniNest_Backend.Controllers
 
             var getProduct=await _productService.GetProductById(id);
 
+            if(getProduct==null) { 
+                return NotFound("Product Not Found"); 
+            }
+
             return Ok(new ApiResponse<ProductDTO>(200, "Successfully accessed Product",getProduct));
         }
 
@@ -93,13 +97,13 @@ namespace FurniNest_Backend.Controllers
 
 
 
-        [HttpGet("ViewProductByCategory")]
+        [HttpGet("ViewProductByCategory/{Id}")]
 
-        public async Task<IActionResult> ViewProductByCategory(int categoryId)
+        public async Task<IActionResult> ViewProductByCategory(int Id)
         {
             try
             {
-                var res = await _productService.GetroductByCategory(categoryId);
+                var res = await _productService.GetroductByCategory(Id);
 
                 if (res.StatusCode == 400)
                 {

@@ -97,7 +97,9 @@ namespace FurniNest_Backend.Services.AuthServices
                   Name=user.Name,
                   Email=userLogin.Email,
                   Role=user.Role,
-                  Token = token
+                  Token = token,
+                  AccountStatus=user.AccountStatus,
+
                 };
 
 
