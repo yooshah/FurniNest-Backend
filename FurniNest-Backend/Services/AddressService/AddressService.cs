@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FurniNest_Backend.DataContext;
+using FurniNest_Backend.DTOs.AddressDTOs;
 using FurniNest_Backend.DTOs.OrderDTOs;
 using FurniNest_Backend.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -20,13 +21,13 @@ namespace FurniNest_Backend.Services.AddressService
         
         }
 
-        public async Task<ApiResponse<string>> CreateShippingAddress(int userUId, OrderAddressDTO orderAddressDTO)
+        public async Task<ApiResponse<int>> CreateShippingAddress(int userUId, OrderAddressDTO orderAddressDTO)
         {
             try
             {
                 if (orderAddressDTO == null)
                 {
-                    return new ApiResponse<string>(400, "Bad Request,Address is null");
+                    return new ApiResponse<int>(400, "Bad Request,Address is null");
 
 
                 }
@@ -38,7 +39,7 @@ namespace FurniNest_Backend.Services.AddressService
 
                 if (addressCount >= 3)
                 {
-                    return new ApiResponse<string>(400, "User cannot have more than 3 addresses.");
+                    return new ApiResponse<int>(422, "User cannot have more than 3 addresses.");
                 }
 
 
@@ -49,34 +50,34 @@ namespace FurniNest_Backend.Services.AddressService
                 await _context.SaveChangesAsync();
 
 
-                return new ApiResponse<string>(200, "Successfully Created Shipping Address");
+                return new ApiResponse<int>(200, "Successfully Created Shipping Address",newAddress.Id);
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<ApiResponse<List<OrderAddressDTO>>> GetShippingAddress(int userId)
+        public async Task<ApiResponse<List<ViewAddressDTO>>> GetShippingAddress(int userId)
         {
 
             var userAddress = await _context.Users.Include(x => x.ShippingAddresses).FirstOrDefaultAsync(x => x.Id == userId);
 
             if (userAddress == null)
             {
-                return new ApiResponse<List<OrderAddressDTO>>(401, "Invalid User");
+                return new ApiResponse<List<ViewAddressDTO>>(401, "Invalid User");
             }
 
          
 
-            var res = new List<OrderAddressDTO>();
+            var res = new List<ViewAddressDTO>();
 
             foreach (var address in userAddress.ShippingAddresses)
             {
-                var showAddress = _mapper.Map<OrderAddressDTO>(address);
+                var showAddress = _mapper.Map<ViewAddressDTO>(address);
                 res.Add(showAddress);
             }
 
-            return new ApiResponse<List<OrderAddressDTO>>(200, "Shipping Address Fetched Successfully", res);
+            return new ApiResponse<List<ViewAddressDTO>>(200, "Shipping Address Fetched Successfully", res);
 
 
         }

@@ -51,7 +51,7 @@ namespace FurniNest_Backend.Services.WishListService
 
             if (productInWishList != null)
             {
-                return new ApiResponse<string>(200, "product Already Exist in WishList!");
+                return new ApiResponse<string>(200, "product Already in  WishList!");
 
             }
             var wishItem = new WishListItem
@@ -64,7 +64,7 @@ namespace FurniNest_Backend.Services.WishListService
 
             await _context.SaveChangesAsync();
 
-            return new ApiResponse<string>(200, $"Product with product Id-{productId} Succcessfully Added to WishList!");
+            return new ApiResponse<string>(200, $"Added Successfully to Wishlist");
 
 
         }

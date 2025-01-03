@@ -4,8 +4,9 @@ namespace FurniNest_Backend.DTOs.OrderDTOs
 {
     public class OrderAddressDTO
     {
-        
+       
 
+        [Required(ErrorMessage = "FullName is required")]
         public string FullName { get; set; }
 
         [Required(ErrorMessage = "Address is required")]

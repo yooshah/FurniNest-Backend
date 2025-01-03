@@ -19,7 +19,7 @@ namespace FurniNest_Backend.Controllers
 
         [HttpPost("AddToWishList")]
         [Authorize(Roles ="user")]
-        public async Task<IActionResult> AddToWishList(int productId)
+        public async Task<IActionResult> AddToWishList([FromQuery] int productId)
         {
 
             try

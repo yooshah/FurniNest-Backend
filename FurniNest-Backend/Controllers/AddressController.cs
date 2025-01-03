@@ -21,7 +21,7 @@ namespace FurniNest_Backend.Controllers
         [HttpPost("CreateOrderAddress")]
         [Authorize(Roles = "user")]
 
-        public async Task<IActionResult> CreateAddress(OrderAddressDTO createAddress)
+        public async Task<IActionResult> CreateAddress([FromBody] OrderAddressDTO createAddress)
         {
             try
             {
@@ -31,7 +31,12 @@ namespace FurniNest_Backend.Controllers
 
                 if (res.StatusCode == 400)
                 {
-                    return BadRequest("Bad Request,Address is nul or Already 3 Addresses of delivery Exist,Update it ");
+                    return BadRequest("Bad Request,Address is null ");
+                }
+
+                if(res.StatusCode == 422)
+                {
+                    return StatusCode(422, "3 addresses limit reached!");
                 }
                 return Ok(res);
 
@@ -74,15 +79,15 @@ namespace FurniNest_Backend.Controllers
 
         }
 
-        [HttpDelete("RemoveShippingAddress")]
+        [HttpDelete("RemoveShippingAddress/{addressId}")]
         [Authorize(Roles = "user")]
 
         public async Task<IActionResult> RemoveshippingAddressbyUser(int addressId)
         {
+            var userId= Convert.ToInt32(HttpContext.Items["UserId"]);
 
             try
             {
-            var userId= Convert.ToInt32(HttpContext.Items["UserId"]);
 
                 if (addressId <= 0)
                 {
