@@ -17,9 +17,9 @@ namespace FurniNest_Backend.Controllers
             _cartService = cartService;
         }
 
-        [HttpPost("AddToCart")]
+        [HttpPost("AddToCart/{productId}")]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> AddToCart([FromForm] int productId)
+        public async Task<IActionResult> AddToCart(int productId)
         {
             try
             {

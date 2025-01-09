@@ -7,7 +7,7 @@ namespace FurniNest_Backend.Services.OrderService
     {
         Task<string> CreateRazorpayOrder(long price);
 
-        Task<bool> VerifyRazorpayPayment(RazorpayPaymentDTO payment);
+        Task<bool> Payment(RazorpayPaymentDTO payment);
 
 
 
@@ -16,11 +16,17 @@ namespace FurniNest_Backend.Services.OrderService
         Task<ApiResponse<List<OrderViewDTO>>> GetOrderItems(int userId);
         Task<List<AdminViewOrderDTO>> GetUserOrderByAdmin(int userId);
 
-        Task<bool> ChangeOrderStatus(int orderId,string orderStatus);
+        Task<bool> ChangeOrderStatus(int orderId, string orderStatus);
 
         Task<decimal> TotalRevenue();
 
         Task<int> TotalProductSold();
+
+        Task<RevenueRecordDTO> GetRevenueRecords();
+
+        Task<List<OrderItemDTO>> GetOrderItemByOrderId(int orderId);
+
+
 
 
 

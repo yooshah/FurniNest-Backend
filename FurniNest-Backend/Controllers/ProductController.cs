@@ -22,10 +22,20 @@ namespace FurniNest_Backend.Controllers
         [HttpPost("AddProduct")]
         //[Authorize(Roles ="admin")]
         public async Task<IActionResult> AddProduct([FromForm] AddProductDTO? newProduct,IFormFile? image)
+           
         {
+            try
+            {
             var productAdded=await _productService.AddProduct(newProduct,image);
 
-            return Created($"api/products/{productAdded}",new ApiResponse<AddProductDTO>(201,"Product Added Successfully",newProduct));
+
+            return Ok(new ApiResponse<ProductDTO>(201,"Product Added Successfully",productAdded));
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<string>(500, "an unexpected error occured", null, ex.Message));
+            }
         }
 
         [HttpGet("GetProductById/{id}")]
@@ -46,9 +56,9 @@ namespace FurniNest_Backend.Controllers
         {
             try
             {
-                await _productService.UpdateProduct(id, updateProduct,image);
+                var result =await _productService.UpdateProduct(id, updateProduct,image);
 
-                return Ok(new ApiResponse<string>(200, "Product Updated Successfully "));
+                return Ok(new ApiResponse<ProductDTO>(200, "Product Updated Successfully ",result));
             }
             catch (Exception ex)
             {

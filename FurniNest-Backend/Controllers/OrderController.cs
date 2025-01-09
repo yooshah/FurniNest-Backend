@@ -21,7 +21,8 @@ namespace FurniNest_Backend.Controllers
 
         }
 
-        [HttpPost("Razorpay/Order-Create")]
+        [HttpPost("Razorpay/CreateOrderId/{price}")]
+        
         public async Task<IActionResult> CreateRazorpayOrder(long price)
         {
             try
@@ -46,6 +47,26 @@ namespace FurniNest_Backend.Controllers
             }
 
         }
+        [HttpPost("Payment/Razorpay")]
+        [Authorize(Roles = "user")]
+
+        public async Task<IActionResult> Payment(RazorpayPaymentDTO paymentDetail)
+        {
+            try
+            {
+                if (paymentDetail == null)
+                {
+                    return BadRequest("razorpay details connot be null here");
+                }
+
+                var res = await _orderService.Payment(paymentDetail);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
 
         [HttpPost("PlaceOrder")]
         [Authorize(Roles ="user")]
@@ -65,6 +86,7 @@ namespace FurniNest_Backend.Controllers
             }
 
         }
+     
 
         [HttpGet("UserOrderDetails")]
         [Authorize(Roles = "user")]
@@ -104,7 +126,25 @@ namespace FurniNest_Backend.Controllers
 
         }
 
-        [HttpPatch("ChangeOrderStatus")]
+        [HttpGet("GetOrderItems")]
+        //[Authorize(Roles = "admin")]
+        public async Task<IActionResult> GetOrderItemById(int orderId)
+        {
+            try
+            {
+                var result=await _orderService.GetOrderItemByOrderId(orderId);
+
+                return Ok(result);
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error! {ex.Message}");
+            }
+
+        }
+
+        [HttpPatch("ChangeOrderStatus/{orderId}/statusChange")]
         //[Authorize(Roles = "admin")]
 
         public async Task<IActionResult>ChangeOrderStatus(int orderId, string orderStatus)
@@ -126,6 +166,7 @@ namespace FurniNest_Backend.Controllers
             }
 
         }
+
 
         [HttpGet("TotalRevenue")]
         //[Authorize(Roles = "admin")]
@@ -162,6 +203,27 @@ namespace FurniNest_Backend.Controllers
                 return StatusCode(500, $"internal Sever error ${ex.Message}");
             }
 
+
+        }
+
+        [HttpGet("Admin/RevenueRecord")]
+        [Authorize(Roles ="admin")]
+
+        public async Task<IActionResult> GetRecords()
+        {
+
+            try
+            {
+                var res = await _orderService.GetRevenueRecords();
+
+                return Ok(new ApiResponse<RevenueRecordDTO>(200,"Succssfully Fetched Revenue Records",res));
+
+                
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"internal Sever error ${ex.Message}");
+            }
 
         }
     }

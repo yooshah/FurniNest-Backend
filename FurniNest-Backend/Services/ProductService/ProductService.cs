@@ -28,7 +28,7 @@ namespace FurniNest_Backend.Services.ProductService
         }
 
 
-        public async Task<int> AddProduct(AddProductDTO newProduct,IFormFile image)
+        public async Task<ProductDTO> AddProduct(AddProductDTO newProduct,IFormFile image)
         {
 
             if (newProduct == null) {
@@ -60,7 +60,21 @@ namespace FurniNest_Backend.Services.ProductService
                 AddingProduct.CloudImgId = cloudRes.ImgId;
                 await _context.Products.AddAsync(AddingProduct);
                 await _context.SaveChangesAsync();
-                return AddingProduct.ProductId;
+
+                var result = new ProductDTO
+                {
+                    ProductId = AddingProduct.ProductId,
+                    Name = AddingProduct.Name,
+                    Price = AddingProduct.Price,
+                    Brand = AddingProduct.Brand,
+                    Category = categoryCheck.Name,
+                    Rating = AddingProduct.Rating,
+                    Image = cloudRes.ImgUrl,
+                    Stock = AddingProduct.Stock,
+
+                };
+
+                return result;
             }
             catch (DbUpdateException ex)
             {
@@ -109,7 +123,7 @@ namespace FurniNest_Backend.Services.ProductService
         }
 
         
-        public async Task<bool> UpdateProduct(int id, AddProductDTO updtProduct,IFormFile image )
+        public async Task<ProductDTO> UpdateProduct(int id, AddProductDTO updtProduct,IFormFile image )
         {
 
             try
@@ -134,12 +148,12 @@ namespace FurniNest_Backend.Services.ProductService
 
                     
                    
-                    if(string.IsNullOrEmpty(updtProduct.Name))
-                    {
-                    existProduct.Name = updtProduct.Name;
-
-                    }
                     
+                    
+
+                 
+                    
+                    existProduct.Name = updtProduct.Name;
                     existProduct.Price = updtProduct.Price;
                     existProduct.Rating = updtProduct.Rating;
                     existProduct.CategoryId = updtProduct.CategoryId;
@@ -164,7 +178,19 @@ namespace FurniNest_Backend.Services.ProductService
 
 
                     await _context.SaveChangesAsync();
-                    return true;
+                    var result = new ProductDTO
+                    {
+                        ProductId = existProduct.ProductId,
+                        Name = existProduct.Name,
+                        Category=categoryExist.Name,
+                        Price = existProduct.Price,
+                        Rating = existProduct.Rating,
+                        Brand = existProduct.Brand,
+                        Stock = existProduct.Stock,
+                        Image = existProduct.Image,
+                    };
+
+                    return result;
                 }
                 else
                 {

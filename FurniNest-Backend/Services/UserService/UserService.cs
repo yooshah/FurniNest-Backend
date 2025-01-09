@@ -20,13 +20,13 @@ namespace FurniNest_Backend.Services.AdminService
         
         }
 
-        public async Task<ApiResponse<string>> ChangeUserAccountStatus(int UserId)
+        public async Task<ApiResponse<bool>> ChangeUserAccountStatus(int UserId)
         {
             var userAccount = await _context.Users.Where(x=>x.Role=="user").SingleOrDefaultAsync(x => x.Id == UserId);
 
             if (userAccount == null)
             {
-                return new ApiResponse<string>(404, "User Not Found");
+                return new ApiResponse<bool>(404, "User Not Found",false);
             }
 
 
@@ -35,7 +35,7 @@ namespace FurniNest_Backend.Services.AdminService
             string statusMessage = userAccount.AccountStatus ? "activated" : "blocked";
 
             await _context.SaveChangesAsync();
-            return new ApiResponse<string>(200, $"User account has been {statusMessage} successfully.");
+            return new ApiResponse<bool>(200, $"User account has been {statusMessage} successfully.",true);
         }
 
         public async Task<List<UserViewDTO>> ViewAllUser()

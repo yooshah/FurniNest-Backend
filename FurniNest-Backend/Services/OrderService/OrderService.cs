@@ -42,7 +42,7 @@ namespace FurniNest_Backend.Services.OrderService
             var orderId = order["id"].ToString();
             return orderId;
          }
-        public async Task<bool> VerifyRazorpayPayment(RazorpayPaymentDTO payment)
+        public async Task<bool> Payment(RazorpayPaymentDTO payment)
         {
 
             try
@@ -168,10 +168,12 @@ namespace FurniNest_Backend.Services.OrderService
                     ? $"{address.Address}, {address.City}, {address.State} {address.Country}, {address.PostalCode}"
                     : "Address not found",
                 Phone = addressDict.TryGetValue(order.UserId, out var phoneAddress) ? phoneAddress.Phone : "Phone not available",
+                OrderStatus=order.OrderStatus.ToString(),
                 OrderDate = order.OrderDate,
                 Items = order.OrderItems.Select(orderItem => new OrderItemDTO
                 {
                     ProductName = orderItem.Product.Name,
+                    Image=orderItem.Product.Image,
                     Price = orderItem.Price,
                     Quantity = orderItem.Quantity,
                     TotalPrice = orderItem.Price * orderItem.Quantity
@@ -194,14 +196,39 @@ namespace FurniNest_Backend.Services.OrderService
                 return null;
             }
 
-            var result =userOrder.Orders.Select(item=>new AdminViewOrderDTO
+            var result = userOrder.Orders
+          .OrderByDescending(order => order.OrderDate) 
+          .Select(item => new AdminViewOrderDTO
+          {
+              OrderId = item.Id,
+              TransactionId = item.TransactionId,
+              TotalAmount = item.TotalAmount,
+              OrderDate = item.OrderDate,
+              OrderStatus = item.OrderStatus.ToString(),
+          })
+          .ToList();
+
+            return result;
+
+        }
+
+        public async Task<List<OrderItemDTO>> GetOrderItemByOrderId(int orderId)
+        {
+
+            var orderItems = await _context.OrdersItems.Include(x => x.Product).Where(x => x.OrderId == orderId).ToListAsync();
+
+            if (orderItems == null || !orderItems.Any())
             {
-                OrderId=item.Id,
-                TransactionId=item.TransactionId,
-                TotalAmount=item.TotalAmount,
-                OrderStatus=item.OrderStatus.ToString(),
+                return new List<OrderItemDTO>();
+            }
+           
 
-
+            var result=orderItems.Select(item=>new OrderItemDTO
+            {
+                ProductName=item.Product.Name,
+                Price = item.Price,
+                Quantity=item.Quantity,
+                TotalPrice=item.TotalPrice,
 
             }).ToList();
 
@@ -257,6 +284,43 @@ namespace FurniNest_Backend.Services.OrderService
 
 
         }
+
+        public async Task<RevenueRecordDTO> GetRevenueRecords()
+        {
+
+            DateTime today = DateTime.UtcNow.Date;
+            DateTime weekStart = DateTime.UtcNow.AddDays(-7);
+            DateTime monthStart = DateTime.UtcNow.AddMonths(-1);
+            DateTime yearStart = DateTime.UtcNow.AddYears(-1);
+
+            var dayRevenue = await _context.Orders.Where(order => order.OrderDate >= today)
+                .SumAsync(order => order.TotalAmount);
+            var weekRevenue = await _context.Orders
+               .Where(order => order.OrderDate >= weekStart)
+               .SumAsync(order => order.TotalAmount);
+            var monthRevenue = await _context.Orders
+                .Where(order => order.OrderDate >= monthStart)
+                .SumAsync(order => order.TotalAmount);
+
+            var yearRevenue = await _context.Orders
+                .Where(order => order.OrderDate >= yearStart)
+                .SumAsync(order => order.TotalAmount);
+
+            var result=new RevenueRecordDTO
+            {
+                DayRevenue = dayRevenue,
+                WeekRevenue = weekRevenue,
+                MonthRevenue = monthRevenue,
+                YearRevenue = yearRevenue
+            };
+
+            return result;
+
+
+
+        }
+
+
 
 
 

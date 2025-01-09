@@ -5,7 +5,7 @@ namespace FurniNest_Backend.Services.AdminService
 {
     public interface IUserService
     {
-        Task<ApiResponse<string>> ChangeUserAccountStatus(int UserId);
+        Task<ApiResponse<bool>> ChangeUserAccountStatus(int UserId);
 
         Task<List<UserViewDTO>> ViewAllUser();
 
